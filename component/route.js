@@ -2,10 +2,10 @@ const url = require('url');
 
 exports.route = (() => {
     let _link = '';
-    let init = (link) => {
-        _link = link;
+    let init = (request) => {
+        _link = request.url;
     };
-    let path = () => {
+    let get_path = () => {
         let pn = url.parse(_link).pathname;
         if(pn !== null && pn !== undefined){
             pn = pn.split('/');
@@ -18,14 +18,11 @@ exports.route = (() => {
         return null;
     };
     return {
-        init: function(link){
-            init(link)
+        init: function(request){
+            init(request)
         },
-        path: function(){
-            return path()
-        },
-        query: function(){
-            return query()
+        get_path: function(){
+            return get_path()
         }
     };
 })();
