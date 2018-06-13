@@ -8,28 +8,14 @@ exports.route = (() => {
     let path = () => {
         let pn = url.parse(_link).pathname;
         if(pn !== null && pn !== undefined){
-            return pn.slice(1, pn.length);
+            pn = pn.split('/');
+            return {
+                module: pn[1] ? pn[1] : null,
+                action: pn[2] ? pn[2] : null,
+                args: pn[3] ? pn[3] : null
+            };
         }
         return null;
-    };
-    let query = () => {
-        let q = url.parse(_link).query,
-            arr,
-            ret;
-        if(q === null || q === undefined){
-            return null;
-        }
-        arr = q.split('&');
-        ret = [];
-        if(arr !== null && arr !== undefined){
-            arr.forEach((item)=>{
-                ret.push({
-                    name: item.split('=')[0],
-                    value: item.split('=')[1]
-                });
-            });
-        }
-        return ret;
     };
     return {
         init: function(link){
