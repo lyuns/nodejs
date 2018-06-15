@@ -17,12 +17,7 @@ const onRequest = (request, response) => {
     });
     request.on('end', ()=>{
         post = querystring.parse(post);
-        response.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
-        let retJson = dataservice.deal(json_path, post);
-
-        response.write(util.inspect(retJson));
-
-        response.end()
+        dataservice.deal(response, json_path, post);
     });
 };
 
