@@ -1,3 +1,4 @@
+let db = require('../component/db').db;
 
 exports.user = (()=>{
     let login = () => {

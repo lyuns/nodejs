@@ -1,7 +1,5 @@
 const path = require('path');
 
-const db = require('./db').db;
-
 exports.dataservice = (()=>{
     let data = '';
     let deal = (json_path, post) => {
