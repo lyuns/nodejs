@@ -22,7 +22,11 @@ exports.route = (() => {
             init(request)
         },
         get_path: function(){
-            return get_path()
+            let ret = get_path();
+            if(ret.module === 'favicon.ico'){
+                return null;
+            }
+            return ret;
         }
     };
 })();
