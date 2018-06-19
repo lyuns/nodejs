@@ -12,10 +12,12 @@ exports.dataservice = (()=>{
                     module[json_path.action](response, json_path.args, post);
                 }
             }
-        }catch {
+        }catch(e) {
+            console.log(e);
+            response.writeHead(404, { 'Content-Type': 'text/html; charset=utf-8' });
             response.write('404');
+            response.end();
         }
-        response.end();
     };
 
     return {
