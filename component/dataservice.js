@@ -2,31 +2,31 @@ const path = require('path');
 
 exports.dataservice = (()=>{
     let data = '';
-    let deal = (response, json_path, post) => {
-        data = post;
+    let deal = (props) => {
+        data = props.post;
         try {
-            if(json_path.module !== null && json_path.module !== undefined){
-                let module = require(path.resolve(__dirname, '../buiness/', json_path.module) + '.js')[json_path.module];
+            if(props.json_path.module !== null && props.json_path.module !== undefined){
+                let module = require(path.resolve(__dirname, '../buiness/', props.json_path.module) + '.js')[props.json_path.module];
 
-                if(module !== null && module !== undefined && json_path.action !== null && json_path.action !== undefined){
-                    module[json_path.action](response, json_path.args, post);
+                if(module !== null && module !== undefined && props.json_path.action !== null && props.json_path.action !== undefined){
+                    module[props.json_path.action](props);
                 }
             }
         }catch(e) {
             console.log(e);
-            response.writeHead(404, { 'Content-Type': 'text/html; charset=utf-8' });
-            response.write('404');
-            response.end();
+            props.response.writeHead(404, { 'Content-Type': 'text/html; charset=utf-8' });
+            props.response.write('404');
+            props.response.end();
         }
     };
 
     return {
-        deal: function(response, json_path, post){
-            if(json_path === null || json_path === undefined) {
-                response.end();
+        deal: function(props){
+            if(props.json_path === null || props.json_path === undefined) {
+                props.response.end();
                 return;
             }
-            return deal(response, json_path, post);
+            return deal(props);
         }
     };
 })();

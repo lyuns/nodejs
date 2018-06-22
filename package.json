@@ -4,6 +4,7 @@
   "description": "",
   "main": "server.js",
   "dependencies": {
+    "captchapng": "0.0.1",
     "mongodb": "^3.0.10"
   },
   "devDependencies": {},

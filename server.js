@@ -5,7 +5,25 @@ const http = require('http'),
 const route = require('./component/route').route,
     dataservice = require('./component/dataservice').dataservice;
 
+const sessionList = new Map();
+
+// 自动回收session
+(function(){
+    setInterval(()=>{
+        for(let [key, value] of sessionList){
+            if(value.delay === undefined || value.delay === null){
+                continue;
+            }
+            if(parseInt(value.delay) < 0){
+                sessionList.delete(key);
+            }
+            value.delay -= 60;
+        }
+    }, 1000*60);
+}());
+
 const onRequest = (request, response) => {
+    // request.session.code = 'sdfds';
     route.init(request);
 
     let json_path = route.get_path();
@@ -17,7 +35,12 @@ const onRequest = (request, response) => {
     });
     request.on('end', ()=>{
         post = querystring.parse(post);
-        dataservice.deal(response, json_path, post);
+        dataservice.deal({
+            response,
+            json_path,
+            post,
+            sessionList
+        });
     });
 };
 
