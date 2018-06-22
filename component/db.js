@@ -1,7 +1,7 @@
 const MongoClient = require('mongodb').MongoClient;
 const url = "mongodb://conn:mongoconn@localhost:27017/foo";
 
-let dbname = 'foo';
+const dbname = 'foo';
 
 exports.db = (()=>{
     let create = (collect, callback) => {

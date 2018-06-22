@@ -1,8 +1,9 @@
 
-let util = require('util');
+const util = require('util');
 
-let db = require('../component/db').db;
-let crypt = require('../component/crypt').crypt;
+const db = require('../component/db').db;
+const crypt = require('../component/crypt').crypt;
+const tools = require('../component/tools').tools;
 
 let verifyCode = (props) => {
     if(props.post.sessionId === undefined || props.post.sessionId.trim() === null){
@@ -29,7 +30,19 @@ exports.user = (()=>{
                 // 用户不存在，后续统一输出反馈
             }else{
                 if(res[0].passwd === crypt.transMD5(props.post.passwd + ':' + res[0].salt)){
-                    props.response.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
+                    let userStatusCode = tools.getRandom(((props)=>{
+                        let arr = [];
+                        for(let [key, value] of props.sessionList){
+                            arr.push(key);
+                        }
+                        return arr;
+                    })(props));
+                    let code = parseInt(Math.random()*9000+1000);
+                    props.sessionList.set(userStatusCode, {code, delay: 1*60*60*24});
+                    props.response.writeHead(200, {
+                        'Set-Cookie': 'userStatus=' + code + ';expires=' + new Date(Date.now()+1000*60*60*24).toGMTString(),
+                        'Content-Type': 'text/html; charset=utf-8'
+                    });
                     props.response.write('登录成功！');
                     props.response.end();
                     return;

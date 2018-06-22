@@ -26,6 +26,7 @@ const onRequest = (request, response) => {
     // request.session.code = 'sdfds';
     route.init(request);
 
+    // 同时过滤浏览器对于ico图标的请求
     let json_path = route.get_path();
 
     // 处理post数据

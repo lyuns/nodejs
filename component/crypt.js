@@ -1,4 +1,4 @@
-let crypto = require('crypto');
+const crypto = require('crypto');
 
 exports.crypt = (() => {
     let randomSalt = () => {
