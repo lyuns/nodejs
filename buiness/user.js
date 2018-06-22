@@ -4,6 +4,23 @@ let util = require('util');
 let db = require('../component/db').db;
 let crypt = require('../component/crypt').crypt;
 
+let verifyCode = (props) => {
+    if(props.post.sessionId === undefined || props.post.sessionId.trim() === null){
+        //客户端清空了sessionId
+        return false;
+    }else if(props.sessionList.get(props.post.sessionId) === undefined || props.sessionList.get(props.post.sessionId) === null){
+        //sessionId已过期或sessionId不正确
+        return false;
+    }else{
+        if(props.post.verifyCode !== undefined && props.sessionList.get(props.post.sessionId).code.toString() === props.post.verifyCode.toString()){
+            props.sessionList.delete(props.post.sessionId);
+            return true;
+        }
+        // sessionId或验证码不正确
+        return false;
+    }
+}
+
 exports.user = (()=>{
     let login = (props) => {
         db.create('user', ()=>{});
@@ -14,14 +31,6 @@ exports.user = (()=>{
                 if(res[0].passwd === crypt.transMD5(props.post.passwd + ':' + res[0].salt)){
                     props.response.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
                     props.response.write('登录成功！');
-                    if(props.post.sessionId === undefined || props.post.sessionId.trim() === null){
-                        props.response.write("客户端清空了sessionId");
-                    }else if(props.sessionList.get(props.post.sessionId) === undefined || props.sessionList.get(props.post.sessionId) === null){
-                        props.response.write("sessionId已过期或sessionId不正确");
-                    }else{
-                        props.response.write(util.inspect(props.sessionList.get(props.post.sessionId)));
-                        props.sessionList.delete(props.post.sessionId);
-                    }
                     props.response.end();
                     return;
                 }
@@ -32,6 +41,12 @@ exports.user = (()=>{
         });
     };
     let signup = (props) => {
+        if(!verifyCode(props)){
+            props.response.writeHead(403, { 'Content-Type': 'text/html; charset=utf-8' });
+            props.response.write('图片验证码错误！');
+            props.response.end();
+            return;
+        }
         db.create('user', ()=>{});
         db.find('user', {name: props.post.name}, (res)=>{
             let randomSalt = crypt.getRandomSalt();
@@ -48,6 +63,12 @@ exports.user = (()=>{
         });
     };
     let changepasswd = (props) => {
+        if(!verifyCode(props)){
+            props.response.writeHead(403, { 'Content-Type': 'text/html; charset=utf-8' });
+            props.response.write('图片验证码错误！');
+            props.response.end();
+            return;
+        }
         db.create('user', ()=>{});
         db.find('user', {name: props.post.name}, (res)=>{
             if(res !== undefined && res.length === 0){
